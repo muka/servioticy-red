@@ -1,0 +1,40 @@
+<script type="text/javascript">
+    RED.nodes.registerType('servioticy-config', {
+        category: 'config',
+        defaults: {
+            name: {
+                value: "apikey",
+                required: true
+            },
+            url: {
+                value: "http://api.servioticy.com",
+                required: true
+            },
+            apiKey: {
+                value: "",
+                required: true,
+//                validate: RED.validators.number()
+            }
+        },
+        label: function () {
+            var _u = this.url.substr(7);
+            _u = _u.substr(0, 1) === '/' ? _u.substr(1) : _u;
+            return this.name + "@" + _u;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="remote-server">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
+        <input type="text" id="node-config-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-url"><i class="icon-bookmark"></i> Url</label>
+        <input type="text" id="node-config-input-url">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apiKey"><i class="icon-bookmark"></i> Api Key</label>
+        <input type="text" id="node-config-input-apiKey">
+    </div>
+</script>
