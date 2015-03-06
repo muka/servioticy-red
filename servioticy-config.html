@@ -3,8 +3,8 @@
         category: 'config',
         defaults: {
             name: {
-                value: "apikey",
-                required: true
+                value: "",
+                required: false
             },
             url: {
                 value: "http://api.servioticy.com",
@@ -12,29 +12,44 @@
             },
             apiKey: {
                 value: "",
-                required: true,
-//                validate: RED.validators.number()
+                required: true
+            },
+            transport: {
+                value: "http",
+                required: true
             }
         },
         label: function () {
-            var _u = this.url.substr(7);
-            _u = _u.substr(0, 1) === '/' ? _u.substr(1) : _u;
-            return this.name + "@" + _u;
+            return this.name ?
+                        this.name : this.apiKey ?
+                            this.apiKey.substr(0,4) + ".." + this.apiKey.substr(this.apiKey.length - 4) : 'Servioticy API';
         }
     });
 </script>
 
-<script type="text/x-red" data-template-name="remote-server">
+<script type="text/x-red" data-template-name="servioticy-config">
     <div class="form-row">
         <label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
         <input type="text" id="node-config-input-name">
     </div>
-    <div class="form-row">
-        <label for="node-config-input-url"><i class="icon-bookmark"></i> Url</label>
-        <input type="text" id="node-config-input-url">
-    </div>
+
     <div class="form-row">
         <label for="node-config-input-apiKey"><i class="icon-bookmark"></i> Api Key</label>
         <input type="text" id="node-config-input-apiKey">
     </div>
+
+    <div class="form-row">
+        <label for="node-config-input-url"><i class="icon-bookmark"></i> Url</label>
+        <input type="text" id="node-config-input-url">
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-transport"><i class="icon-bookmark"></i> Transport</label>
+        <select id="node-config-input-transport">
+            <option value="http">http</option>
+            <option value="mqtt">mqtt</option>
+            <option value="stomp">stomp</option>
+        </select>
+    </div>
+
 </script>

@@ -1,0 +1,21 @@
+{
+    "name": "servioticy-red",
+    "version": "0.1.0",
+    "description": "Servioticy nodes for node-red ",
+    "dependencies": {
+        "compose.io": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/muka/servioticy-red"
+    },
+    "license": "Apache",
+    "keywords": ["node-red", "servioticy", "iot"],
+    "node-red": {
+        "nodes": {
+            "stream-push": "stream-push.js",
+            "servioticy-config": "servioticy-config.js"
+        }
+    },
+    "author": "Luca Capra <lcapra@create-net.org>"
+}
