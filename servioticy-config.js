@@ -5,6 +5,7 @@ module.exports = function (RED) {
         this.name = n.name;
         this.url = n.url;
         this.apiKey = n.apiKey;
+        this.soid = n.soid;
     };
 
     RED.nodes.registerType("servioticy-config", ServioticyConfig);

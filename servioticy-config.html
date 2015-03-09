@@ -2,10 +2,6 @@
     RED.nodes.registerType('servioticy-config', {
         category: 'config',
         defaults: {
-            name: {
-                value: "",
-                required: false
-            },
             url: {
                 value: "http://api.servioticy.com",
                 required: true
@@ -17,21 +13,34 @@
             transport: {
                 value: "http",
                 required: true
-            }
+            },
+            soid: {
+                value: "",
+                required: false
+            },
+            name: {
+                value: "",
+                required: false
+            },
         },
         label: function () {
-            return this.name ?
-                        this.name : this.apiKey ?
-                            this.apiKey.substr(0,4) + ".." + this.apiKey.substr(this.apiKey.length - 4) : 'Servioticy API';
+
+            var label = this.name || null;
+
+            if(!label) {
+                label = this.soid ? this.soid.substr(0,4) + ".." + this.soid.substr(this.soid.length - 4) : null;
+            }
+
+            if(!label) {
+                label = this.apiKey ? this.apiKey.substr(0,4) + ".." + this.apiKey.substr(this.apiKey.length - 4) : 'Servioticy API';
+            }
+
+            return label;
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="servioticy-config">
-    <div class="form-row">
-        <label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
-        <input type="text" id="node-config-input-name">
-    </div>
 
     <div class="form-row">
         <label for="node-config-input-apiKey"><i class="icon-bookmark"></i> Api Key</label>
@@ -50,6 +59,16 @@
             <option value="mqtt">mqtt</option>
             <option value="stomp">stomp</option>
         </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-soid"><i class="icon-tag"></i> SOID</label>
+        <input type="text" id="node-config-input-soid" placeholder="Service Object ID">
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
+        <input type="text" id="node-config-input-name">
     </div>
 
 </script>

@@ -9,17 +9,17 @@ module.exports = function(RED) {
 
         var node = this;
 
-//        console.log("config", config);
-
         node.name = config.name;
         node.soid = config.soid;
         node.stream = config.stream && config.stream.length ? config.stream : null;
         node.api = RED.nodes.getNode(config.api);
 
-//        console.log("*******", node.api);
+        if(!node.soid) {
+            node.soid = node.api.soid;
+        }
 
         var _DBG = false;
-        _DBG = true;
+//        _DBG = true;
 
         var dbg = function(m) {
             _DBG && node.log( m );

@@ -8,6 +8,8 @@ var Promise = compose.require('bluebird');
 var soCache = {};
 var apiCache = {};
 
+lib.Promise = Promise;
+
 lib.get = function(apiConfig) {
 
     if(apiConfig.apiKey && apiCache[ apiConfig.apiKey ]) {
