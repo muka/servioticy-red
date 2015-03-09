@@ -10,14 +10,40 @@ var apiCache = {};
 
 lib.Promise = Promise;
 
+var getkey = function(apiConfig) {
+    return apiConfig.apiKey + apiConfig.transport + apiConfig.url;
+};
+
+var getApi = function(apiConfig) {
+    return apiCache[ getkey(apiConfig) ]
+};
+
+var setApi = function(apiConfig, api) {
+    var _key = getkey(apiConfig);
+    apiCache[ _key ] = api;
+    soCache[ _key ] = soCache[ _key ] || {};
+};
+
+var getSO = function(apiConfig, soid) {
+    var _key = getkey(apiConfig);
+    return getApi(apiConfig) && soCache[ _key ][ soid ] ? soCache[ _key ][ soid ] : null;
+};
+
+var setSO = function(apiConfig, so) {
+    if(getApi(apiConfig)) {
+        soCache[ getkey(apiConfig) ][ so.id ] = so.toJson();
+    }
+};
+
 lib.get = function(apiConfig) {
 
-    if(apiConfig.apiKey && apiCache[ apiConfig.apiKey ]) {
-        return Promise.resolve(apiCache[ apiConfig.apiKey ]);
+    var api = getApi(apiConfig);
+    if(api) {
+        return Promise.resolve(api);
     }
 
     return compose.setup(apiConfig).then(function(api) {
-        apiCache[ apiConfig.apiKey ] = api;
+        setApi(apiConfig, api);
         return Promise.resolve(api);
     });
 };
@@ -25,18 +51,13 @@ lib.get = function(apiConfig) {
 lib.getServiceObject = function(apiConfig, soid) {
     return lib.get(apiConfig).then(function(api) {
 
-        var apiKey = apiConfig.apiKey;
-
-        if(soCache[ apiKey ] && soCache[ apiKey ][ soid ]) {
-            var so = new api.ServiceObject(soCache[ apiKey ][ soid ]);
-            return Promise.resolve(so).bind(api);
+        var so = getSO(apiConfig, soid);
+        if(so) {
+            return Promise.resolve(new api.ServiceObject(so)).bind(api);
         }
 
         return api.load(soid).then(function(so) {
-
-            soCache[ apiKey ] = soCache[ apiKey ] || {};
-            soCache[ apiKey ][ soid ] = so.toJson();
-
+            setSO(apiConfig, so);
             return Promise.resolve(so).bind(api);
         });
     });

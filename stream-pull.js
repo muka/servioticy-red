@@ -26,7 +26,7 @@ module.exports = function (RED) {
         }
 
         var _DBG = false;
-        _DBG = true;
+//        _DBG = true;
 
         var dbg = function (m) {
             _DBG && node.log(m);
@@ -116,9 +116,6 @@ module.exports = function (RED) {
                         // current return the data stored at the position of the internal cursor
                         var dataobj = dataset.current();
                         var value = dataobj.asObject();
-
-                        dbg("Sending value");
-                        console.log(value);
 
                         node.send({
                             topic: streamName,
