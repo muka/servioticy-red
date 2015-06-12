@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('stream-pull', {
-        category: 'servioticy',
+        category: 'Device streams',
         color: '#CCFFFF',
         defaults: {
             api: { value: "", type:"servioticy-config" },
@@ -21,6 +21,10 @@
                 label = this.name + (this.stream ? "." + this.stream : "")
             }
 
+            if(!label) {
+                label = this.stream ? this.stream : 'stream';
+            }
+            
             var soid = this.soid ? this.soid : null;
 
             if(!soid && this.api) {
@@ -32,11 +36,7 @@
                 label = soid ? soid.substr(0, 5) + '..' : null;
             }
 
-            if(!label) {
-                label = "Service Object";
-            }
-
-            return label;
+            return 'pull:' + label;
         }
     });
 </script>

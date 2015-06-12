@@ -1,5 +1,15 @@
 
 var apis = require('./apis');
+var util = require('./util');
+
+var dbg = function(m) {
+    util.isDebug('sub') && node.log( m );
+};
+
+var print = function() {
+    util.log.apply(util.log, arguments);
+};
+
 
 var Promise = apis.Promise;
 
@@ -25,22 +35,14 @@ module.exports = function (RED) {
             node.soid = node.api.soid;
         }
 
-        var _DBG = false;
-//        _DBG = true;
-
-        var dbg = function (m) {
-            _DBG && node.log(m);
-        };
-
         this.on('input', function (msg) {
 
             dbg("msg " + JSON.stringify(msg));
+            
+            var info = util.parsePayload(msg, node);
 
-            apis.getServiceObject({
-                apiKey: node.api.apiKey,
-                transport: node.api.transport || "http",
-                url: node.api.url || "http://api.servioticy.com"
-            }, node.soid)
+            dbg("soid " + node.soid);
+            apis.getServiceObject(node.api, node.soid)
 
             .then(function (so) {
 
@@ -102,27 +104,36 @@ module.exports = function (RED) {
                     dbg("Found " + dataset.size() + " records");
 
                     if(dataset.size() === 0) {
-                        node.info("No data found for " + so.id + "." + streamName +
+                        node.log("No data found for " + so.id + "." + streamName +
                             (searchFilter ?
                                 " with filter: " +
                                     (typeof searchFilter === 'string' ?
                                         searchFilter : JSON.stringify(searchFilter))
                                 : ""));
-                    }
-
-                    // iterate results
-                    while (dataset.next()) {
-
-                        // current return the data stored at the position of the internal cursor
-                        var dataobj = dataset.current();
-                        var value = dataobj.asObject();
-
+                                
                         node.send({
                             topic: streamName,
-                            lastUpdate: dataobj.lastUpdate,
-                            payload: value
+                            lastUpdate: null,
+                            payload: null
                         });
+                                
+                    }
+                    else {
 
+                        // iterate results
+                        while (dataset.next()) {
+
+                            // current return the data stored at the position of the internal cursor
+                            var dataobj = dataset.current();
+                            var value = dataobj.asObject();
+
+                            node.send({
+                                topic: streamName,
+                                lastUpdate: dataobj.lastUpdate,
+                                payload: value
+                            });
+
+                        }
                     }
 
                     return Promise.resolve();
@@ -133,6 +144,7 @@ module.exports = function (RED) {
 //                    })
             .catch(function (err) {
                 node.error(err);
+                print(err);
             });
 
         });

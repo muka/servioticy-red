@@ -15,7 +15,7 @@ var getkey = function(apiConfig) {
 };
 
 var getApi = function(apiConfig) {
-    return apiCache[ getkey(apiConfig) ]
+    return apiCache[ getkey(apiConfig) ];
 };
 
 var setApi = function(apiConfig, api) {
@@ -42,9 +42,17 @@ lib.get = function(apiConfig) {
         return Promise.resolve(api);
     }
 
-    return compose.setup(apiConfig).then(function(api) {
-        setApi(apiConfig, api);
-        return Promise.resolve(api);
+    api = new compose(apiConfig);
+    setApi(apiConfig, api);
+    
+    return Promise.resolve(api);
+};
+
+lib.fromNode = function(node) {
+    return lib.get({
+        apiKey: node.apiKey,
+        transport: node.transport || "http",
+        url: node.url || "http://api.servioticy.com"
     });
 };
 

@@ -1,5 +1,15 @@
 
 var apis = require('./apis');
+var util = require('./util');
+
+var dbg = function(m) {
+    util.isDebug('sub') && node.log( m );
+};
+
+var print = function() {
+    util.log.apply(util.log, arguments);
+};
+
 
 module.exports = function(RED) {
 
@@ -18,23 +28,22 @@ module.exports = function(RED) {
             node.soid = node.api.soid;
         }
 
-        var _DBG = false;
-//        _DBG = true;
-
-        var dbg = function(m) {
-            _DBG && node.log( m );
-        };
-
         this.on('input', function(msg) {
 
+            var info = util.parsePayload(msg, node);
+
             var channelsData;
+
             // will be used as value for lastUpdate if not specified
             var timestamp = new Date;
             var rawdata = msg.payload;
 
             dbg("msg " + JSON.stringify(msg));
-
-            if(typeof rawdata === 'string') {
+            
+            if( info.data ) {
+                channelsData = info.data;
+            }
+            else if(typeof rawdata === 'string') {
 
                 dbg("Parse payload json: " + rawdata);
 
@@ -51,15 +60,10 @@ module.exports = function(RED) {
                     channelsData = null;
                 }
             }
-
+            
             if(channelsData && Object.keys(channelsData).length > 0) {
 
-                apis.getServiceObject({
-                        apiKey: node.api.apiKey,
-                        transport: node.api.transport || "http",
-                        url: node.api.url || "http://api.servioticy.com"
-                    }, node.soid)
-
+                apis.getServiceObject(node.api, node.soid)
                     .then(function(so) {
 
                         var api = this;
@@ -97,6 +101,7 @@ module.exports = function(RED) {
                     })
                     .catch(function(err) {
                         node.error(err);
+                        print(err);
                     });
 
             }
